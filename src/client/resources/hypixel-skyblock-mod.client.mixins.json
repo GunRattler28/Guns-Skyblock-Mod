@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "com.gunrattler.client.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [],
+  "client": [
+    "AbstractContainerScreenMixin",
+    "LocalPlayerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
