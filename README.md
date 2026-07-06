@@ -6,7 +6,7 @@ Gun's Skyblock Mod is a fabric mod for minecraft that is designed to help make l
 ## Requirements
 - Minecraft Java Edition Verision 26.2
 - Fabric Loader
-- Fabric API
+- Fabric API 0.154.0+26.2
 - JAVA 21+
 
 ## Features
