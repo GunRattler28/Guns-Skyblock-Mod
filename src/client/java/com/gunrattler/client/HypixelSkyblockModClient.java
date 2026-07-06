@@ -1,8 +1,8 @@
 package com.gunrattler.client;
 
+import com.gunrattler.client.feature.CustomScoreboard;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.ItemStack;
@@ -41,14 +41,15 @@ public class HypixelSkyblockModClient implements ClientModInitializer {
     private static final Map<String, PriceEntry> bazaarCache = new ConcurrentHashMap<>();
     private static final Map<String, Long> lbinCache = new ConcurrentHashMap<>();
     
-    private static final HttpClient httpClient = HttpClient.newBuilder()
-            .connectTimeout(Duration.ofSeconds(10))
-            .build();
+    private static final HttpClient httpClient = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
             
-    private static String statusIndicator = "Connecting to market trackers...";
+    private static String statusIndicator = "Something went wrong";
 
     @Override
     public void onInitializeClient() {
+        CustomScoreboard.register();
+        System.out.println("HypixelSkyblockModClient.java is running");
+
         fetchBazaar();
         fetchLbin();
 
@@ -67,14 +68,15 @@ public class HypixelSkyblockModClient implements ClientModInitializer {
 
                         int count = stack.getCount();
                         
-                        // Universal input parsing completely clean of Java version pointer regressions
                         boolean isHoldingShift = false;
-                        Minecraft mc = Minecraft.getInstance();
-                        if (mc != null && mc.options != null && mc.options.keyShift != null) {
-                            isHoldingShift = mc.options.keyShift.isDown();
+                        long windowHandle = org.lwjgl.glfw.GLFW.glfwGetCurrentContext();
+                        if (windowHandle != 0) {
+                            isHoldingShift = org.lwjgl.glfw.GLFW.glfwGetKey(windowHandle, org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_SHIFT) == org.lwjgl.glfw.GLFW.GLFW_PRESS 
+                                          || org.lwjgl.glfw.GLFW.glfwGetKey(windowHandle, org.lwjgl.glfw.GLFW.GLFW_KEY_RIGHT_SHIFT) == org.lwjgl.glfw.GLFW.GLFW_PRESS;
                         }
 
-                        if (bzEntry != null) {
+                        // STRICT PRIORITY CHECK: If a valid Bazaar entry exists, use it exclusively
+                        if (bzEntry != null && (bzEntry.buyPrice > 0 || bzEntry.sellPrice > 0)) {
                             long finalBuy = isHoldingShift ? bzEntry.buyPrice * count : bzEntry.buyPrice;
                             long finalSell = isHoldingShift ? bzEntry.sellPrice * count : bzEntry.sellPrice;
                             String modeTag = isHoldingShift ? " Stack" : "";
@@ -86,9 +88,10 @@ public class HypixelSkyblockModClient implements ClientModInitializer {
                                 lines.add(Component.literal("§8Hold [SHIFT] for entire stack prices"));
                             }
                         } 
+                        // FALLBACK CHECK: Use LBIN only if no valid Bazaar prices were processed
                         else if (ahPrice != null && ahPrice > 0) {
                             long finalAh = isHoldingShift ? ahPrice * count : ahPrice;
-                            String prefix = isHoldingShift ? "§dLowest BIN Stack: " : "§dLowest BIN: ";
+                            String prefix = isHoldingShift ? "§dLBIN Stack: " : "§dLBIN: ";
                             
                             lines.add(Component.literal(prefix + "§e" + formatPrice(finalAh) + " coins"));
                             
@@ -96,7 +99,7 @@ public class HypixelSkyblockModClient implements ClientModInitializer {
                                 lines.add(Component.literal("§8Hold [SHIFT] for entire stack price"));
                             }
                         } else {
-                            lines.add(Component.literal("§7ID: " + skyblockId + " §8(" + statusIndicator + ")"));
+                            System.out.println("§7ID: " + skyblockId + " §8(" + statusIndicator + ")");
                         }
                     });
                 }
@@ -140,22 +143,38 @@ public class HypixelSkyblockModClient implements ClientModInitializer {
 
     private void parseBazaarEngine(String json) {
         try {
-            Pattern pattern = Pattern.compile("\"product_id\"\\s*:\\s*\"([^\"]+)\".*?\"buyPrice\"\\s*:\\s*([0-9.]+).*?\"sellPrice\"\\s*:\\s*([0-9.]+)");
-            Matcher matcher = pattern.matcher(json);
+            String[] products = json.split("\"product_id\"\\s*:\\s*\"");
             int matchedItems = 0;
 
-            while (matcher.find()) {
-                String id = matcher.group(1).toUpperCase();
-                try {
-                    double buyVal = Double.parseDouble(matcher.group(2));
-                    double sellVal = Double.parseDouble(matcher.group(3));
-                    if (buyVal > 0 || sellVal > 0) {
-                        bazaarCache.put(id, new PriceEntry((long) buyVal, (long) sellVal));
-                        matchedItems++;
+            for (String productBlock : products) {
+                int endIdIdx = productBlock.indexOf("\"");
+                if (endIdIdx == -1) continue;
+                String id = productBlock.substring(0, endIdIdx).toUpperCase();
+
+                int quickStatusIdx = productBlock.indexOf("\"quick_status\"");
+                if (quickStatusIdx != -1) {
+                    String quickStatusBlock = productBlock.substring(quickStatusIdx);
+
+                    Pattern buyPattern = Pattern.compile("\"buyPrice\"\\s*:\\s*([0-9.]+)");
+                    Matcher buyMatcher = buyPattern.matcher(quickStatusBlock);
+
+                    Pattern sellPattern = Pattern.compile("\"sellPrice\"\\s*:\\s*([0-9.]+)");
+                    Matcher sellMatcher = sellPattern.matcher(quickStatusBlock);
+
+                    if (buyMatcher.find() && sellMatcher.find()) {
+                        try {
+                            double buyVal = Double.parseDouble(buyMatcher.group(1));
+                            double sellVal = Double.parseDouble(sellMatcher.group(1));
+                            
+                            if (buyVal > 0 || sellVal > 0) {
+                                bazaarCache.put(id, new PriceEntry((long) buyVal, (long) sellVal));
+                                matchedItems++;
+                            }
+                        } catch (NumberFormatException ignored) {}
                     }
-                } catch (NumberFormatException ignored) {}
+                }
             }
-            System.out.println("[Price Mod] Bazaar parsing complete: " + matchedItems + " entries mapped.");
+            System.out.println("[Price Mod] Bazaar parsing complete: " + matchedItems + " entries mapped from quick_status.");
         } catch (Exception e) {
             System.out.println("[Price Mod] Bazaar parser failed: " + e.getMessage());
         }

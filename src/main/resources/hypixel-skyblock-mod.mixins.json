@@ -1,12 +1,9 @@
 {
   "required": true,
-  "package": "com.gunrattler.client.mixin",
-  "compatibilityLevel": "JAVA_17",
+  "package": "com.gunrattler.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "refmap": "hypixel-skyblock-mod-refmap.json",
   "mixins": [],
-  "client": [
-    "AbstractContainerScreenMixin",
-    "LocalPlayerMixin"
-  ],
   "injectors": {
     "defaultRequire": 1
   }
