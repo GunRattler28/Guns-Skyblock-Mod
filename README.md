@@ -32,6 +32,8 @@ This mod runs automatically in the background once installed. Here is how you in
 - Minecraft Java Edition 26.2
 - Fabric API 0.154.0+26.2
 - Loom 1.17
+- Fabric Loader
+- Java 21
 
 ## Configuration File
 
