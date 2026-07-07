@@ -1,9 +1,12 @@
 package com.gunrattler.client;
 
 import com.gunrattler.client.feature.CustomScoreboard;
+import com.gunrattler.client.util.TabParser;
+
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.ItemStack;
@@ -109,6 +112,13 @@ public class HypixelSkyblockModClient implements ClientModInitializer {
                 }
             }
         });
+
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            if (client.level != null && client.player != null) {
+                TabParser.updateData();
+            }
+        });
+
     }
 
     public static void lockSlot(String slotIdentifier) {

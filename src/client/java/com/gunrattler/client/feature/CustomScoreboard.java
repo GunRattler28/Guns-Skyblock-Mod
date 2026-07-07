@@ -34,12 +34,6 @@ public class CustomScoreboard {
                     return; 
                 }
 
-                try {
-                    TabParser.updateData();
-                } catch (Exception e) {
-                    // Fail-safe wrapper
-                }
-
                 if (!TabParser.hasData()) {
                     return;
                 }

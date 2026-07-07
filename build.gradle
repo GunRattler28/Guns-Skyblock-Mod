@@ -35,15 +35,10 @@ loom {
 }
 
 dependencies {
-    // To change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     
-    // REMOVED: Yarn mappings are completely removed since MC 26.1+ is unobfuscated
-    
-    // FIXED: Use standard 'implementation' instead of 'modImplementation' for 26.x+
     implementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-    // Fabric API.
     implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
     runtimeOnly "me.djtheredstoner:DevAuth-fabric:1.2.2"
 }
@@ -58,15 +53,14 @@ processResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-    it.options.release = 25
+    it.options.release = 21
 }
 
 java {
-    // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
     withSourcesJar()
 
-    sourceCompatibility = JavaVersion.VERSION_25
-    targetCompatibility = JavaVersion.VERSION_25
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 jar {

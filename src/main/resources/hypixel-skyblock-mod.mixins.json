@@ -1,7 +1,7 @@
 {
   "required": true,
   "package": "com.gunrattler.mixin",
-  "compatibilityLevel": "JAVA_25",
+  "compatibilityLevel": "JAVA_21",
   "refmap": "hypixel-skyblock-mod-refmap.json",
   "mixins": [],
   "injectors": {
