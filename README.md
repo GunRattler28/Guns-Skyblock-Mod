@@ -35,7 +35,11 @@ This mod runs automatically in the background once installed. Here is how you in
 Your slot configurations are saved locally in plain text format so they can be remembered every time you launch the game.
 * **File Path:** `config/locked_slots.txt` *(located inside your .minecraft folder)*
 * **Format Example:**
-  ```text
-  Inventory:1
-  Inventory:5
-  InventoryMenu:32
+  ```
+  Inventory:0   //Hotbar slot 1
+  Inventory:1   //Hotbar slot 2
+  Inventory:2   //Hotbar slot 3
+  Inventory:3   //Hotbar slot 4
+  Inventory:4   //Hotbar slot 5
+  Inventory:5   //Hotbar slot 6
+  ```
