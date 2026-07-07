@@ -17,12 +17,9 @@ This mod runs automatically in the background once installed. Here is how you in
 * **Bazaar Pricing:** Hovering over any item compatible with the Bazaar displays its current **Insta-Buy** and **Insta-Sell** values directly inside the item's tooltip.
 * **LBIN Pricing:** If an item is not traded on the Bazaar, the tooltip will dynamically fall back to showing its Lowest Bin (**LBIN**) auction house price.
 * **Price Prioritization:** For items featuring both data pools, the mod strictly prioritizes **Bazaar prices** over LBIN to give you the most accurate commodity valuation.
+* **Stack Scaling (Shift Modifier):** By default, tooltips display individual per-item unit prices. Holding down `LEFT SHIFT` while hovering over a stacked item instantly scales the tooltip text to display the complete compounding value of the entire item stack.
 
-### 3. Stack Scaling (Shift Modifier Key)
-* **Default View:** By default, tooltips display the individual per-item unit price.
-* **Checking Stacks:** Hold down the **[LEFT SHIFT]** or **[RIGHT SHIFT]** key while hovering over a stacked item. The tooltip will instantly multiply the price to reflect the exact value of the entire item stack.
-
-### 4. Persistent Slot Locking (Skyblock Exclusive)
+### 3. Persistent Slot Locking (Skyblock Exclusive)
 * **Locking a Slot:** Open any container menu or your inventory and hover your mouse over a slot. Press the **[L]** key to lock or unlock that slot. Locked slots will instantly display a distinct locked overlay texture.
 * **Drop & Interaction Protection:** While a slot is locked, the mod completely blocks you from dropping the item (**Q** drops), dragging it out of the container, moving it via hotkeys, or losing it if you close an interface while holding the item. 
 * **Smart Environment Detection:** Safety features automatically activate **only** when your connection to Hypixel Skyblock is validated, leaving your vanilla survival worlds or other minigames uninhibited.
