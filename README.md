@@ -4,14 +4,14 @@ A lightweight, performance-focused client-side Fabric mod designed to enhance yo
 
 ---
 
-## 🛠 How to Use the Mod
+## How to Use the Mod
 
 This mod runs automatically in the background once installed. Here is how you interact with its core features in-game:
 
 ### 1. Custom Scoreboard Overlay
 * **What it does:** Replaces the cluttered vanilla sidebar scoreboard with a clean, compact HUD showing essential server data (Purse, Bank, Powder, current Area, and active Objectives). 
 * **Activation:** The custom HUD automatically renders on the right side of your screen **only** when you are actively connected to `hypixel.net` and playing the **Skyblock** gamemode.
-* **Auto-Hide:** The overlay automatically hides itself when you open the vanilla debug screen (**F3**) to prevent text overlapping.
+* **Auto-Hide:** The overlay automatically hides itself when you open the vanilla debug screen (`F3`) to prevent text overlapping.
 
 ### 2. Dynamic Price Tooltips
 * **Bazaar Pricing:** Hovering over any item compatible with the Bazaar displays its current **Insta-Buy** and **Insta-Sell** values directly inside the item's tooltip.
@@ -24,7 +24,7 @@ This mod runs automatically in the background once installed. Here is how you in
 
 ---
 
-## 📦 Installation & Requirements
+## Installation & Requirements
 
 1. Ensure you are running the modern **Fabric Loader** for Minecraft 26.2.
 2. Drop the compiled `.jar` file along with the required **Fabric API** dependency into your `.minecraft/mods` folder.
@@ -35,6 +35,6 @@ This mod runs automatically in the background once installed. Here is how you in
 - Fabric API 0.154.0+26.2
 - JAVA 21+
 
-## 🔗 Downloads & Live Project
+## Downloads & Live Project
 The official production builds, updates, and documentation are hosted transparently on our project dashboard:
-* **Download via Modrinth:** [[https://modrinth.com/mod/guns-skyblock-mod](https://modrinth.com/mod/guns-skyblock-mod))]
+* **Download via Modrinth:** [https://modrinth.com/mod/guns-skyblock-mod(https://modrinth.com/mod/guns-skyblock-mod))]
