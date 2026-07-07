@@ -1,6 +1,7 @@
 package com.gunrattler.client.mixin;
 
 import com.gunrattler.client.HypixelSkyblockModClient;
+import com.gunrattler.client.util.TabParser;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
@@ -34,14 +35,15 @@ public abstract class AbstractContainerScreenMixin {
     @Unique
     private static final Identifier LOCK_TEXTURE = Identifier.fromNamespaceAndPath("hypixel-skyblock-mod", "textures/gui/lockedslot.png");
 
-@Inject(method = "extractSlot", at = @At("TAIL"))
-private void renderLockOverlay(GuiGraphicsExtractor graphics, Slot slot, int argX, int argY, CallbackInfo ci) {
-    if (slot != null && HypixelSkyblockModClient.lockedSlots.contains(getUniqueSlotKey(slot))) {
-        int x = slot.x;
-        int y = slot.y;
-        graphics.blit(RenderPipelines.GUI_TEXTURED, LOCK_TEXTURE, x, y, 0.0f, 0.0f, 16, 16, 16, 16);
+    @Inject(method = "extractSlot", at = @At("TAIL"))
+    private void renderLockOverlay(GuiGraphicsExtractor graphics, Slot slot, int argX, int argY, CallbackInfo ci) {
+        // Only render the lock texture if we are actually actively on SkyBlock
+        if (TabParser.hasData() && slot != null && HypixelSkyblockModClient.lockedSlots.contains(getUniqueSlotKey(slot))) {
+            int x = slot.x;
+            int y = slot.y;
+            graphics.blit(RenderPipelines.GUI_TEXTURED, LOCK_TEXTURE, x, y, 0.0f, 0.0f, 16, 16, 16, 16);
+        }
     }
-}
 
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
     private void onKeyPressed(net.minecraft.client.input.KeyEvent event, CallbackInfoReturnable<Boolean> cir) {
@@ -51,17 +53,21 @@ private void renderLockOverlay(GuiGraphicsExtractor graphics, Slot slot, int arg
         boolean isLocked = HypixelSkyblockModClient.lockedSlots.contains(slotKey);
 
         if (event.key() == GLFW.GLFW_KEY_L) {
+            // SKYBLOCK CHECK: Ignore the lock/unlock hotkey entirely outside of SkyBlock
+            if (!TabParser.hasData()) return;
+
             if (isLocked) {
-                HypixelSkyblockModClient.lockedSlots.remove(slotKey);
+                HypixelSkyblockModClient.unlockSlot(slotKey);
             } else {
-                HypixelSkyblockModClient.lockedSlots.add(slotKey);
+                HypixelSkyblockModClient.lockSlot(slotKey);
             }
             cir.setReturnValue(true);
             return;
         }
 
         Minecraft mc = Minecraft.getInstance();
-        if (isLocked && mc.options.keyDrop.matches(event)) {
+        // SKYBLOCK CHECK: Only enforce the lock block if on SkyBlock
+        if (TabParser.hasData() && isLocked && mc.options.keyDrop.matches(event)) {
             cir.setReturnValue(true);
             mc.player.sendSystemMessage(Component.literal("Slot is locked!"));
             return;
@@ -70,7 +76,8 @@ private void renderLockOverlay(GuiGraphicsExtractor graphics, Slot slot, int arg
 
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     private void onMouseClick(MouseButtonEvent event, boolean handled, CallbackInfoReturnable<Boolean> cir) {
-        if (this.hoveredSlot != null) {
+        // SKYBLOCK CHECK: Only intercept mouse clicks on SkyBlock
+        if (TabParser.hasData() && this.hoveredSlot != null) {
             String slotKey = getUniqueSlotKey(this.hoveredSlot);
             if (HypixelSkyblockModClient.lockedSlots.contains(slotKey)) {
                 cir.setReturnValue(false);
@@ -81,6 +88,8 @@ private void renderLockOverlay(GuiGraphicsExtractor graphics, Slot slot, int arg
     @Inject(method = "handleSlotStateChanged", at = @At("HEAD"), cancellable = true, remap = false)
     private void onSlotAction(int slotId, int button, boolean actionTypeFlag, CallbackInfo ci) {
         try {
+            if (!TabParser.hasData()) return;
+
             AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) (Object) this;
             if (screen.getMenu() != null) {
                 Slot slot = screen.getMenu().getSlot(slotId);
@@ -94,6 +103,8 @@ private void renderLockOverlay(GuiGraphicsExtractor graphics, Slot slot, int arg
     @Inject(method = "onClose", at = @At("HEAD"), cancellable = true)
     private void blockDropOnClose(CallbackInfo ci) {
         try {
+            if (!TabParser.hasData()) return;
+
             Minecraft mc = Minecraft.getInstance();
             if (mc.player != null) {
                 AbstractContainerMenu menu = mc.player.containerMenu;

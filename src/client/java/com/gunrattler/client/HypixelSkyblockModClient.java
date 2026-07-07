@@ -3,6 +3,7 @@ package com.gunrattler.client;
 import com.gunrattler.client.feature.CustomScoreboard;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.ItemStack;
@@ -11,6 +12,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.network.chat.Component;
 import net.minecraft.nbt.CompoundTag;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,6 +31,7 @@ import java.util.Set;
 public class HypixelSkyblockModClient implements ClientModInitializer {
 
     public static final Set<String> lockedSlots = new HashSet<>();
+    private static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve("locked_slots.txt");
 
     private static class PriceEntry {
         final long buyPrice;
@@ -48,7 +53,7 @@ public class HypixelSkyblockModClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         CustomScoreboard.register();
-        System.out.println("HypixelSkyblockModClient.java is running");
+        loadLockedSlots();
 
         fetchBazaar();
         fetchLbin();
@@ -75,7 +80,6 @@ public class HypixelSkyblockModClient implements ClientModInitializer {
                                           || org.lwjgl.glfw.GLFW.glfwGetKey(windowHandle, org.lwjgl.glfw.GLFW.GLFW_KEY_RIGHT_SHIFT) == org.lwjgl.glfw.GLFW.GLFW_PRESS;
                         }
 
-                        // STRICT PRIORITY CHECK: If a valid Bazaar entry exists, use it exclusively
                         if (bzEntry != null && (bzEntry.buyPrice > 0 || bzEntry.sellPrice > 0)) {
                             long finalBuy = isHoldingShift ? bzEntry.buyPrice * count : bzEntry.buyPrice;
                             long finalSell = isHoldingShift ? bzEntry.sellPrice * count : bzEntry.sellPrice;
@@ -88,7 +92,7 @@ public class HypixelSkyblockModClient implements ClientModInitializer {
                                 lines.add(Component.literal("§8Hold [SHIFT] for entire stack prices"));
                             }
                         } 
-                        // FALLBACK CHECK: Use LBIN only if no valid Bazaar prices were processed
+
                         else if (ahPrice != null && ahPrice > 0) {
                             long finalAh = isHoldingShift ? ahPrice * count : ahPrice;
                             String prefix = isHoldingShift ? "§dLBIN Stack: " : "§dLBIN: ";
@@ -105,6 +109,43 @@ public class HypixelSkyblockModClient implements ClientModInitializer {
                 }
             }
         });
+    }
+
+    public static void lockSlot(String slotIdentifier) {
+        if (lockedSlots.add(slotIdentifier)) {
+            saveLockedSlots();
+        }
+    }
+
+    public static void unlockSlot(String slotIdentifier) {
+        if (lockedSlots.remove(slotIdentifier)) {
+            saveLockedSlots();
+        }
+    }
+
+    private static void loadLockedSlots() {
+        if (!Files.exists(CONFIG_PATH)) return;
+        try {
+            lockedSlots.clear();
+            List<String> lines = Files.readAllLines(CONFIG_PATH);
+            for (String line : lines) {
+                String trimmed = line.trim();
+                if (!trimmed.isEmpty()) {
+                    lockedSlots.add(trimmed);
+                }
+            }
+            System.out.println("[Price Mod] Config loaded: " + lockedSlots.size() + " slots synchronized.");
+        } catch (IOException e) {
+            System.err.println("[Price Mod] Error loading locked slots: " + e.getMessage());
+        }
+    }
+
+    private static void saveLockedSlots() {
+        try {
+            Files.write(CONFIG_PATH, lockedSlots);
+        } catch (IOException e) {
+            System.err.println("[Price Mod] Error saving locked slots: " + e.getMessage());
+        }
     }
 
     private void fetchBazaar() {

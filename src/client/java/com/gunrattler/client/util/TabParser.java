@@ -23,7 +23,6 @@ public class TabParser {
     private static String sbDate = "";
     private static String sbTime = "";
     private static String mainArea = "";
-    private static String subArea = "";
     private static String slayerName = "";
     private static String slayerProgress = "";
     private static String objectiveLine = "";
@@ -57,36 +56,29 @@ public class TabParser {
             return;
         }
 
-        // --- FIXED FOR HIDDEN SCOREBOARD & EXCLUSIVE TO SKYBLOCK ---
-        // Instead of asking for the visible sidebar slot (which our Mixin turned off), 
-        // we pull Hypixel's explicit internal Skyblock registry name directly.
         Objective skyblockObjective = scoreboard.getObjective("SBScoreboard");
         if (skyblockObjective == null) {
             resetData();
             return;
         }
 
-        // Clean color codes and check if the scoreboard title actually says "skyblock"
         String sidebarTitle = COLOR_CODE_PATTERN.matcher(skyblockObjective.getDisplayName().getString()).replaceAll("").toLowerCase();
         if (!sidebarTitle.contains("skyblock")) {
             resetData();
             return;
         }
-        // -------------------------------------------------------------
 
         hasData = true;
         
         sbDate = "";
         sbTime = "";
         mainArea = "";
-        subArea = "";
         objectiveLine = "";
         objectiveSubtitleLine = "";
         mithrilPowder = 0.0;
         gemstonePowder = 0.0;
         glacitePowder = 0.0;
 
-        // Sort sidebar teams
         Collection<PlayerTeam> rawTeams = scoreboard.getPlayerTeams();
         List<PlayerTeam> sortedTeams = new ArrayList<>(rawTeams);
         sortedTeams.sort((t1, t2) -> Integer.compare(extractNumber(t2.getName()), extractNumber(t1.getName())));
@@ -123,7 +115,6 @@ public class TabParser {
             }
         }
 
-        // Search the compiled sidebar lines for Objective entries
         for (int i = 0; i < orderedCleanedLines.size(); i++) {
             String clean = orderedCleanedLines.get(i);
             if (clean.toLowerCase().contains("objective")) {
@@ -150,17 +141,13 @@ public class TabParser {
 
             if (line1IsMain && !line2IsMain) {
                 mainArea = line1;
-                subArea = line2;
             } else if (line2IsMain && !line1IsMain) {
                 mainArea = line2;
-                subArea = line1;
             } else {
                 mainArea = line1;
-                subArea = line2;
             }
         }
 
-        // Tab List Parser (Bank, Slayer & Powders)
         var connection = client.getConnection();
         var players = connection.getListedOnlinePlayers();
         if (players == null || players.isEmpty()) {
@@ -246,7 +233,6 @@ public class TabParser {
         sbDate = "";
         sbTime = "";
         mainArea = "";
-        subArea = "";
         slayerName = "";
         slayerProgress = "";
         objectiveLine = "";
@@ -306,7 +292,6 @@ public class TabParser {
     public static String getSbDate() { return sbDate; }
     public static String getSbTime() { return sbTime; }
     public static String getMainArea() { return mainArea; }
-    public static String getSubArea() { return subArea; }
     public static String getSlayerName() { return slayerName; }
     public static String getSlayerProgress() { return slayerProgress; }
     public static String getObjectiveLine() { return objectiveLine; }

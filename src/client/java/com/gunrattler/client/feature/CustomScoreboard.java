@@ -53,7 +53,6 @@ public class CustomScoreboard {
                     () -> TabParser.getSbDate().isEmpty() ? null : "§b" + TabParser.getSbDate(),
                     () -> TabParser.getSbTime().isEmpty() ? null : "§e" + TabParser.getSbTime(),
                     () -> TabParser.getMainArea().isEmpty() ? null : TabParser.getMainArea(),
-                    () -> TabParser.getSubArea().isEmpty() ? null : TabParser.getSubArea(),
                     () -> "§r  ", 
                     () -> TabParser.getPurse().isEmpty() ? null : "§6" + TabParser.getPurse(),
                     () -> TabParser.getBank().isEmpty() ? null : "§d" + TabParser.getBank(),

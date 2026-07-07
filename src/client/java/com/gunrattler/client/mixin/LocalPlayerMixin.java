@@ -1,6 +1,8 @@
 package com.gunrattler.client.mixin;
 
 import com.gunrattler.client.HypixelSkyblockModClient;
+import com.gunrattler.client.util.TabParser;
+
 import net.minecraft.network.chat.Component;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -17,6 +19,7 @@ public class LocalPlayerMixin {
     @Inject(method = "drop", at = @At("HEAD"), cancellable = true)
     private void blockCoreDrop(boolean dropStack, CallbackInfoReturnable<Boolean> cir) {
         try {
+            if (!TabParser.hasData()) return;
             LocalPlayer player = (LocalPlayer) (Object) this;
             Object inventory = player.getInventory();
             
@@ -49,7 +52,9 @@ public class LocalPlayerMixin {
                 if (HypixelSkyblockModClient.lockedSlots.contains(slotKey)) {
                     cir.setReturnValue(false);
                     Minecraft mc = Minecraft.getInstance();
-                    mc.player.sendSystemMessage(Component.literal("Slot is locked!"));
+                    if (mc.player != null) {
+                        mc.player.sendSystemMessage(Component.literal("§cSlot is locked!"));
+                    }
                 }
             }
         } catch (Exception ignored) {}
