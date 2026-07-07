@@ -1,6 +1,6 @@
-# Hypixel Skyblock Price & HUD Mod
+# Gun's Skyblock Mod
 
-A lightweight, performance-focused client-side Fabric mod designed to enhance your Hypixel Skyblock experience with dynamic price evaluation tooltips and a sleek, non-intrusive custom scoreboard overlay.
+A lightweight, performance-focused client-side Fabric mod designed to enhance your Hypixel Skyblock experience with dynamic price evaluation tooltips, a sleek, non-intrusive custom scoreboard overlay, and persistent, fail-safe item protection.
 
 ---
 
@@ -22,19 +22,20 @@ This mod runs automatically in the background once installed. Here is how you in
 * **Default View:** By default, tooltips display the individual per-item unit price.
 * **Checking Stacks:** Hold down the **[LEFT SHIFT]** or **[RIGHT SHIFT]** key while hovering over a stacked item. The tooltip will instantly multiply the price to reflect the exact value of the entire item stack.
 
+### 4. Persistent Slot Locking (Skyblock Exclusive)
+* **Locking a Slot:** Open any container menu or your inventory and hover your mouse over a slot. Press the **[L]** key to lock or unlock that slot. Locked slots will instantly display a distinct locked overlay texture.
+* **Drop & Interaction Protection:** While a slot is locked, the mod completely blocks you from dropping the item (**Q** drops), dragging it out of the container, moving it via hotkeys, or losing it if you close an interface while holding the item. 
+* **Smart Environment Detection:** Safety features automatically activate **only** when your connection to Hypixel Skyblock is validated, leaving your vanilla survival worlds or other minigames uninhibited.
+* **Local Persistence:** Your locked slots are automatically written straight to disk, saving your locked preferences perfectly across game reboots.
+
 ---
 
-## Installation & Requirements
+## Configuration File
 
-1. Ensure you are running the modern **Fabric Loader** for Minecraft 26.2.
-2. Drop the compiled `.jar` file along with the required **Fabric API** dependency into your `.minecraft/mods` folder.
-3. Launch the game and connect to Hypixel!
-
-- Minecraft Java Edition Verision 26.2
-- Fabric Loader
-- Fabric API 0.154.0+26.2
-- JAVA 21+
-
-## Downloads & Live Project
-The official production builds, updates, and documentation are hosted transparently on our project dashboard:
-* **Download via Modrinth:** [https://modrinth.com/mod/guns-skyblock-mod(https://modrinth.com/mod/guns-skyblock-mod))]
+Your slot configurations are saved locally in plain text format so they can be remembered every time you launch the game.
+* **File Path:** `config/locked_slots.txt` *(located inside your .minecraft folder)*
+* **Format Example:**
+  ```text
+  Inventory:1
+  Inventory:5
+  InventoryMenu:32
