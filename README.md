@@ -27,6 +27,12 @@ This mod runs automatically in the background once installed. Here is how you in
 
 ---
 
+## Requirements
+
+- Minecraft Java Edition 26.2
+- Fabric API 0.154.0+26.2
+- Loom 1.17
+
 ## Configuration File
 
 Your slot configurations are saved locally in plain text format so they can be remembered every time you launch the game.
