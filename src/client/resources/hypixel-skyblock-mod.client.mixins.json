@@ -3,11 +3,11 @@
   "package": "com.gunrattler.client.mixin",
   "compatibilityLevel": "JAVA_21",
   "refmap": "hypixel-skyblock-mod-client-refmap.json",
-  "mixins": [],
-  "client": [
+  "mixins": [
     "AbstractContainerScreenMixin",
     "LocalPlayerMixin",
-    "HideVanillaScoreboardMixin"
+    "HideVanillaScoreboardMixin",
+    "EnderChestInterceptMixin"
   ],
   "injectors": {
     "defaultRequire": 1

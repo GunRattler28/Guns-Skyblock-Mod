@@ -37,7 +37,6 @@ public abstract class AbstractContainerScreenMixin {
 
     @Inject(method = "extractSlot", at = @At("TAIL"))
     private void renderLockOverlay(GuiGraphicsExtractor graphics, Slot slot, int argX, int argY, CallbackInfo ci) {
-        // Only render the lock texture if we are actually actively on SkyBlock
         if (TabParser.hasData() && slot != null && HypixelSkyblockModClient.lockedSlots.contains(getUniqueSlotKey(slot))) {
             int x = slot.x;
             int y = slot.y;
@@ -53,7 +52,6 @@ public abstract class AbstractContainerScreenMixin {
         boolean isLocked = HypixelSkyblockModClient.lockedSlots.contains(slotKey);
 
         if (event.key() == GLFW.GLFW_KEY_L) {
-            // SKYBLOCK CHECK: Ignore the lock/unlock hotkey entirely outside of SkyBlock
             if (!TabParser.hasData()) return;
 
             if (isLocked) {
@@ -66,7 +64,6 @@ public abstract class AbstractContainerScreenMixin {
         }
 
         Minecraft mc = Minecraft.getInstance();
-        // SKYBLOCK CHECK: Only enforce the lock block if on SkyBlock
         if (TabParser.hasData() && isLocked && mc.options.keyDrop.matches(event)) {
             cir.setReturnValue(true);
             mc.player.sendSystemMessage(Component.literal("Slot is locked!"));
@@ -76,7 +73,6 @@ public abstract class AbstractContainerScreenMixin {
 
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     private void onMouseClick(MouseButtonEvent event, boolean handled, CallbackInfoReturnable<Boolean> cir) {
-        // SKYBLOCK CHECK: Only intercept mouse clicks on SkyBlock
         if (TabParser.hasData() && this.hoveredSlot != null) {
             String slotKey = getUniqueSlotKey(this.hoveredSlot);
             if (HypixelSkyblockModClient.lockedSlots.contains(slotKey)) {

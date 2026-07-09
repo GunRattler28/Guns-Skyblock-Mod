@@ -30,6 +30,7 @@ loom {
         client {
             property("devauth.enabled", "true")
             property("devauth.account", "main")
+            vmArg "-Xmx3G"
         }
     }
 }

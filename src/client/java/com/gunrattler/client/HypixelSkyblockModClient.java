@@ -105,8 +105,6 @@ public class HypixelSkyblockModClient implements ClientModInitializer {
                             if (count > 1 && !isHoldingShift) {
                                 lines.add(Component.literal("§8Hold [SHIFT] for entire stack price"));
                             }
-                        } else {
-                            System.out.println("§7ID: " + skyblockId + " §8(" + statusIndicator + ")");
                         }
                     });
                 }
