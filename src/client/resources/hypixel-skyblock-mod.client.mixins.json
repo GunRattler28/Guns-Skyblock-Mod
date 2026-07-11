@@ -7,8 +7,9 @@
     "AbstractContainerScreenMixin",
     "LocalPlayerMixin",
     "HideVanillaScoreboardMixin",
-    "EnderChestInterceptMixin",
-    "ContainerDataMixin"
+    "SlotLockMixin",
+    "ContainerDataMixin",
+    "ScreenInjectionMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -7,9 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,13 +17,12 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import java.lang.reflect.Field;
-
 
 @Mixin(AbstractContainerScreen.class)
 public abstract class AbstractContainerScreenMixin {
 
     @Shadow protected Slot hoveredSlot;
+    
     @Unique
     private String getUniqueSlotKey(Slot slot) {
         if (slot == null || slot.container == null) return "";
@@ -69,53 +66,5 @@ public abstract class AbstractContainerScreenMixin {
             mc.player.sendSystemMessage(Component.literal("Slot is locked!"));
             return;
         }
-    }
-
-    @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
-    private void onMouseClick(MouseButtonEvent event, boolean handled, CallbackInfoReturnable<Boolean> cir) {
-        if (TabParser.hasData() && this.hoveredSlot != null) {
-            String slotKey = getUniqueSlotKey(this.hoveredSlot);
-            if (HypixelSkyblockModClient.lockedSlots.contains(slotKey)) {
-                cir.setReturnValue(false);
-            }
-        }
-    }
-
-    @Inject(method = "handleSlotStateChanged", at = @At("HEAD"), cancellable = true, remap = false)
-    private void onSlotAction(int slotId, int button, boolean actionTypeFlag, CallbackInfo ci) {
-        try {
-            if (!TabParser.hasData()) return;
-
-            AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) (Object) this;
-            if (screen.getMenu() != null) {
-                Slot slot = screen.getMenu().getSlot(slotId);
-                if (slot != null && HypixelSkyblockModClient.lockedSlots.contains(getUniqueSlotKey(slot))) {
-                    ci.cancel(); 
-                }
-            }
-        } catch (Exception ignored) {}
-    }
-
-    @Inject(method = "onClose", at = @At("HEAD"), cancellable = true)
-    private void blockDropOnClose(CallbackInfo ci) {
-        try {
-            if (!TabParser.hasData()) return;
-
-            Minecraft mc = Minecraft.getInstance();
-            if (mc.player != null) {
-                AbstractContainerMenu menu = mc.player.containerMenu;
-                if (menu != null && !menu.getCarried().isEmpty()) {
-                    Slot targetSlot = this.hoveredSlot;
-                    if (targetSlot == null) {
-                        Field field = AbstractContainerScreen.class.getDeclaredField("hoveredSlot");
-                        field.setAccessible(true);
-                        targetSlot = (Slot) field.get(this);
-                    }
-                    if (targetSlot != null && HypixelSkyblockModClient.lockedSlots.contains(getUniqueSlotKey(targetSlot))) {
-                        ci.cancel();
-                    }
-                }
-            }
-        } catch (Exception ignored) {}
     }
 }
