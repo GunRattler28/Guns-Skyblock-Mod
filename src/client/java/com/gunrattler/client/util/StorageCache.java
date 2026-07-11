@@ -17,13 +17,10 @@ import java.util.Map;
 import java.util.Set;
 
 public class StorageCache {
-    // Maps a page key (like "EC_PAGE_1") to an array of 54 item slots
     private static final Map<String, ItemStack[]> cachedInventories = new HashMap<>();
     
-    // Tracks the slot indices that the user has locked
     private static Set<Integer> lockedSlots = new HashSet<>();
 
-    // File I/O setup using Minecraft's bundled Gson and Fabric's config path
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve("hypixel-skyblock-locks.json");
 
@@ -51,27 +48,20 @@ public class StorageCache {
         }
     }
 
-    // --- Lock Management & Persistence ---
-
     public static boolean isSlotLocked(int slotIndex) {
         return lockedSlots.contains(slotIndex);
     }
 
     public static void toggleSlotLock(int slotIndex) {
         if (lockedSlots.contains(slotIndex)) {
-            lockedSlots.remove(slotIndex); // "Delete" when unlocked
+            lockedSlots.remove(slotIndex);
         } else {
-            lockedSlots.add(slotIndex);    // "Write" when locked
+            lockedSlots.add(slotIndex);
         }
         
-        // Immediately write to disk when a change occurs
         saveLocks(); 
     }
 
-    /**
-     * Reads the locked slots from the JSON configuration file.
-     * Call this method when your TabParser detects the player has joined Hypixel Skyblock.
-     */
     public static void loadLocks() {
         if (!Files.exists(CONFIG_PATH)) {
             return;
@@ -89,9 +79,6 @@ public class StorageCache {
         }
     }
 
-    /**
-     * Saves the current locked slots to the JSON configuration file.
-     */
     private static void saveLocks() {
         try {
             Files.createDirectories(CONFIG_PATH.getParent());

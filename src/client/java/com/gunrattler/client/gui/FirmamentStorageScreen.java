@@ -1,6 +1,7 @@
 package com.gunrattler.client.gui;
 
 import com.gunrattler.client.HypixelSkyblockModClient;
+import com.gunrattler.client.util.FirmamentState;
 import com.gunrattler.client.util.StorageCache;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
@@ -22,7 +23,6 @@ public class FirmamentStorageScreen extends Screen {
     private final int PANEL_WIDTH = (9 * SLOT_SIZE) + (PANEL_PADDING * 2);
     private final int PANEL_HEIGHT = (6 * SLOT_SIZE) + 18 + PANEL_PADDING;
 
-    // Added the lock texture identifier
     private static final Identifier LOCK_TEXTURE = Identifier.fromNamespaceAndPath("hypixel-skyblock-mod", "textures/gui/lockedslot.png");
 
     public FirmamentStorageScreen() {
@@ -34,10 +34,9 @@ public class FirmamentStorageScreen extends Screen {
         graphics.fill(0, 0, this.width, this.height, 0xD0101010);
         super.extractRenderState(graphics, mouseX, mouseY, partialTick);
 
-        // Center a single row of 3 pages side-by-side
         int totalCols = 3;
         int startX = (this.width - (totalCols * PANEL_WIDTH)) / 2;
-        int startY = (this.height - PANEL_HEIGHT - 100) / 2; // Lifted slightly to make room for player inventory
+        int startY = (this.height - PANEL_HEIGHT - 100) / 2;
 
         ItemStack hoveredStack = null;
 
@@ -45,7 +44,6 @@ public class FirmamentStorageScreen extends Screen {
             int panelX = startX + (pageIndex * PANEL_WIDTH);
             int panelY = startY;
 
-            // Gray panel background
             graphics.fill(panelX, panelY, panelX + PANEL_WIDTH, panelY + PANEL_HEIGHT, 0xFFC6C6C6);
             graphics.fill(panelX, panelY, panelX + PANEL_WIDTH, panelY + 2, 0xFFFFFFFF);
             graphics.fill(panelX, panelY, panelX + 2, panelY + PANEL_HEIGHT, 0xFFFFFFFF);
@@ -57,13 +55,14 @@ public class FirmamentStorageScreen extends Screen {
 
             String cacheKey = "enderchest_" + (pageIndex + 1);
             ItemStack[] items = StorageCache.getContainerItems(cacheKey);
+            System.out.println("Debug: Rendering " + cacheKey + " | Items found: " + (items != null ? items.length : "NULL"));
 
-            for (int i = 0; i < 45; i++) {
+            for (int i = 9; i < 54; i++) {
                 int slotCol = i % 9;
-                int slotRow = i / 9;
+                int slotRow = (i  - 9 )/ 9;
 
                 int slotX = panelX + PANEL_PADDING + (slotCol * SLOT_SIZE);
-                int slotY = panelY + 18 + (slotRow * SLOT_SIZE);
+                int slotY = panelY + 22 + (slotRow * SLOT_SIZE);
 
                 graphics.fill(slotX, slotY, slotX + 18, slotY + 18, 0xFF8B8B8B);
                 graphics.fill(slotX + 1, slotY + 1, slotX + 17, slotY + 17, 0xFF373737);
@@ -74,8 +73,6 @@ public class FirmamentStorageScreen extends Screen {
                 if (!stack.isEmpty()) {
                     graphics.item(stack, slotX + 1, slotY + 1);
                     
-                    // --- RENDER PADLOCK FOR ENDER CHEST PAGES ---
-                    // "SimpleContainer" is the usual class for generic chests.
                     String ecSlotKey = "SimpleContainer:" + i;
                     if (HypixelSkyblockModClient.lockedSlots.contains(ecSlotKey)) {
                         graphics.blit(RenderPipelines.GUI_TEXTURED, LOCK_TEXTURE, slotX + 1, slotY + 1, 0.0f, 0.0f, 16, 16, 16, 16);
@@ -114,7 +111,6 @@ public class FirmamentStorageScreen extends Screen {
                 if (!stack.isEmpty()) {
                     graphics.item(stack, slotX + 1, slotY + 1);
 
-                    // --- RENDER PADLOCK FOR PLAYER INVENTORY ---
                     String invSlotKey = "Inventory:" + i;
                     if (HypixelSkyblockModClient.lockedSlots.contains(invSlotKey)) {
                         graphics.blit(RenderPipelines.GUI_TEXTURED, LOCK_TEXTURE, slotX + 1, slotY + 1, 0.0f, 0.0f, 16, 16, 16, 16);
@@ -128,7 +124,6 @@ public class FirmamentStorageScreen extends Screen {
             }
         }
 
-        // Hotbar
         for (int i = 0; i < 9; i++) {
             int slotX = invPanelX + PANEL_PADDING + (i * SLOT_SIZE);
             int slotY = invPanelY + 10 + (3 * SLOT_SIZE);
@@ -142,7 +137,6 @@ public class FirmamentStorageScreen extends Screen {
                 if (!stack.isEmpty()) {
                     graphics.item(stack, slotX + 1, slotY + 1);
 
-                    // --- RENDER PADLOCK FOR HOTBAR ---
                     String hotbarSlotKey = "Inventory:" + i;
                     if (HypixelSkyblockModClient.lockedSlots.contains(hotbarSlotKey)) {
                         graphics.blit(RenderPipelines.GUI_TEXTURED, LOCK_TEXTURE, slotX + 1, slotY + 1, 0.0f, 0.0f, 16, 16, 16, 16);
@@ -156,7 +150,6 @@ public class FirmamentStorageScreen extends Screen {
             }
         }
 
-        // --- TOOLTIPS ---
         if (hoveredStack != null && !hoveredStack.isEmpty() && this.minecraft != null && this.minecraft.level != null) {
             List<Component> tooltipLines = hoveredStack.getTooltipLines(
                 TooltipContext.of(this.minecraft.level),
@@ -208,16 +201,11 @@ public class FirmamentStorageScreen extends Screen {
                     
                     int targetPage = pageIndex + 1;
                     
-                    if (this.minecraft != null && this.minecraft.player != null) {
-                        this.minecraft.getSoundManager().play(
-                            net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(
-                                net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1.0F
-                            )
-                        );
+                    FirmamentState.lastRequestedPage = targetPage;
 
+                    if (this.minecraft != null && this.minecraft.player != null) {
                         String command = "ec " + targetPage;
                         this.minecraft.player.connection.sendCommand(command);
-                        
                         return true;
                     }
                 }

@@ -9,7 +9,8 @@
     "HideVanillaScoreboardMixin",
     "SlotLockMixin",
     "ContainerDataMixin",
-    "ScreenInjectionMixin"
+    "ClientPacketListenerMixin",
+    "ContainerSetContentPacketAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
