@@ -21,11 +21,9 @@ public class ClientPacketListenerMixin {
     @Unique
     private static int lastRequestedPage = 1; 
 
-    // Inside your ClientPacketListenerMixin.java
     @Inject(method = "handleContainerContent", at = @At("HEAD"))
     private void onContainerContent(ClientboundContainerSetContentPacket packet, CallbackInfo ci) {
         ContainerSetContentPacketAccessor accessor = (ContainerSetContentPacketAccessor) (Object) packet;
-        int id = accessor.getContainerId();
         List<ItemStack> items = accessor.getItems();
         
         StorageCache.setContainerItems("enderchest_" + com.gunrattler.client.util.FirmamentState.lastRequestedPage, items.toArray(new ItemStack[0]));
@@ -34,7 +32,7 @@ public class ClientPacketListenerMixin {
     @Unique
     private static boolean isOpeningCustomScreen = false;
 
-    @Inject(method = "handleOpenScreen", at = @At("HEAD"))
+    @Inject(method = "handleOpenScreen", at = @At("TAIL"))
     private void onOpenScreen(ClientboundOpenScreenPacket packet, CallbackInfo ci) {
         if (isOpeningCustomScreen) return;
 

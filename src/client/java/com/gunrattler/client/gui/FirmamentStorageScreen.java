@@ -7,6 +7,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.Item.TooltipContext;
@@ -50,16 +51,19 @@ public class FirmamentStorageScreen extends Screen {
             graphics.fill(panelX + PANEL_WIDTH - 2, panelY, panelX + PANEL_WIDTH, panelY + PANEL_HEIGHT, 0xFF555555);
             graphics.fill(panelX, panelY + PANEL_HEIGHT - 2, panelX + PANEL_WIDTH, panelY + PANEL_HEIGHT, 0xFF555555);
 
-            String pageName = "Ender Chest Page #" + (pageIndex + 1);
+            int displayPageNum = pageIndex + 1;
+            String pageName = "Ender Chest Page #" + displayPageNum;
+            if (FirmamentState.lastRequestedPage == displayPageNum) {
+                pageName += " §c(Active)";
+            }
             graphics.text(this.font, Component.literal("§7" + pageName).getVisualOrderText(), panelX + PANEL_PADDING, panelY + 6, 0xFF404040);
 
-            String cacheKey = "enderchest_" + (pageIndex + 1);
+            String cacheKey = "enderchest_" + displayPageNum;
             ItemStack[] items = StorageCache.getContainerItems(cacheKey);
-            System.out.println("Debug: Rendering " + cacheKey + " | Items found: " + (items != null ? items.length : "NULL"));
 
             for (int i = 9; i < 54; i++) {
                 int slotCol = i % 9;
-                int slotRow = (i  - 9 )/ 9;
+                int slotRow = (i - 9) / 9;
 
                 int slotX = panelX + PANEL_PADDING + (slotCol * SLOT_SIZE);
                 int slotY = panelY + 22 + (slotRow * SLOT_SIZE);
@@ -77,11 +81,11 @@ public class FirmamentStorageScreen extends Screen {
                     if (HypixelSkyblockModClient.lockedSlots.contains(ecSlotKey)) {
                         graphics.blit(RenderPipelines.GUI_TEXTURED, LOCK_TEXTURE, slotX + 1, slotY + 1, 0.0f, 0.0f, 16, 16, 16, 16);
                     }
+                }
 
-                    if (mouseX >= slotX && mouseX <= slotX + 18 && mouseY >= slotY && mouseY <= slotY + 18) {
-                        hoveredStack = stack;
-                        graphics.fill(slotX + 1, slotY + 1, slotX + 17, slotY + 17, 0x80FFFFFF);
-                    }
+                if (mouseX >= slotX && mouseX <= slotX + 18 && mouseY >= slotY && mouseY <= slotY + 18) {
+                    if (!stack.isEmpty()) hoveredStack = stack;
+                    graphics.fill(slotX + 1, slotY + 1, slotX + 17, slotY + 17, 0x80FFFFFF);
                 }
             }
         }
@@ -115,11 +119,11 @@ public class FirmamentStorageScreen extends Screen {
                     if (HypixelSkyblockModClient.lockedSlots.contains(invSlotKey)) {
                         graphics.blit(RenderPipelines.GUI_TEXTURED, LOCK_TEXTURE, slotX + 1, slotY + 1, 0.0f, 0.0f, 16, 16, 16, 16);
                     }
+                }
 
-                    if (mouseX >= slotX && mouseX <= slotX + 18 && mouseY >= slotY && mouseY <= slotY + 18) {
-                        hoveredStack = stack;
-                        graphics.fill(slotX + 1, slotY + 1, slotX + 17, slotY + 17, 0x80FFFFFF);
-                    }
+                if (mouseX >= slotX && mouseX <= slotX + 18 && mouseY >= slotY && mouseY <= slotY + 18) {
+                    if (!stack.isEmpty()) hoveredStack = stack;
+                    graphics.fill(slotX + 1, slotY + 1, slotX + 17, slotY + 17, 0x80FFFFFF);
                 }
             }
         }
@@ -141,12 +145,19 @@ public class FirmamentStorageScreen extends Screen {
                     if (HypixelSkyblockModClient.lockedSlots.contains(hotbarSlotKey)) {
                         graphics.blit(RenderPipelines.GUI_TEXTURED, LOCK_TEXTURE, slotX + 1, slotY + 1, 0.0f, 0.0f, 16, 16, 16, 16);
                     }
-
-                    if (mouseX >= slotX && mouseX <= slotX + 18 && mouseY >= slotY && mouseY <= slotY + 18) {
-                        hoveredStack = stack;
-                        graphics.fill(slotX + 1, slotY + 1, slotX + 17, slotY + 17, 0x80FFFFFF);
-                    }
                 }
+
+                if (mouseX >= slotX && mouseX <= slotX + 18 && mouseY >= slotY && mouseY <= slotY + 18) {
+                    if (!stack.isEmpty()) hoveredStack = stack;
+                    graphics.fill(slotX + 1, slotY + 1, slotX + 17, slotY + 17, 0x80FFFFFF);
+                }
+            }
+        }
+
+        if (this.minecraft != null && this.minecraft.player != null && this.minecraft.player.containerMenu != null) {
+            ItemStack carriedStack = this.minecraft.player.containerMenu.getCarried();
+            if (!carriedStack.isEmpty()) {
+                graphics.item(carriedStack, mouseX - 8, mouseY - 8);
             }
         }
 
@@ -184,38 +195,127 @@ public class FirmamentStorageScreen extends Screen {
 
     @Override
     public boolean mouseClicked(net.minecraft.client.input.MouseButtonEvent event, boolean doubleClick) {
-        if (event.button() == 0) { 
-            double mouseX = event.x();
-            double mouseY = event.y();
+        if (this.minecraft == null || this.minecraft.player == null || this.minecraft.gameMode == null || this.minecraft.player.containerMenu == null) {
+            return super.mouseClicked(event, doubleClick);
+        }
 
-            int totalCols = 3;
-            int startX = (this.width - (totalCols * PANEL_WIDTH)) / 2;
-            int startY = (this.height - PANEL_HEIGHT - 100) / 2;
+        double mouseX = event.x();
+        double mouseY = event.y();
+        int button = event.button();
 
-            for (int pageIndex = 0; pageIndex < 3; pageIndex++) {
-                int panelX = startX + (pageIndex * PANEL_WIDTH);
-                int panelY = startY;
+        int totalCols = 3;
+        int startX = (this.width - (totalCols * PANEL_WIDTH)) / 2;
+        int startY = (this.height - PANEL_HEIGHT - 100) / 2;
+        int containerId = this.minecraft.player.containerMenu.containerId;
 
-                if (mouseX >= panelX && mouseX <= (panelX + PANEL_WIDTH) &&
-                    mouseY >= panelY && mouseY <= (panelY + PANEL_HEIGHT)) {
-                    
-                    int targetPage = pageIndex + 1;
-                    
-                    FirmamentState.lastRequestedPage = targetPage;
+        net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
+        com.mojang.blaze3d.platform.Window window = mc.getWindow();
 
-                    if (this.minecraft != null && this.minecraft.player != null) {
-                        String command = "ec " + targetPage;
-                        this.minecraft.player.connection.sendCommand(command);
+        boolean isShiftDown = com.mojang.blaze3d.platform.InputConstants.isKeyDown(window, org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_SHIFT) 
+                        || com.mojang.blaze3d.platform.InputConstants.isKeyDown(window, org.lwjgl.glfw.GLFW.GLFW_KEY_RIGHT_SHIFT);
+
+        ContainerInput inputType = isShiftDown ? ContainerInput.QUICK_MOVE : ContainerInput.PICKUP;
+
+        for (int pageIndex = 0; pageIndex < 3; pageIndex++) {
+            int panelX = startX + (pageIndex * PANEL_WIDTH);
+            int panelY = startY;
+
+            if (mouseX >= panelX && mouseX <= (panelX + PANEL_WIDTH) &&
+                mouseY >= panelY && mouseY <= (panelY + PANEL_HEIGHT)) {
+                
+                int targetPage = pageIndex + 1;
+
+                for (int i = 9; i < 54; i++) {
+                    int slotCol = i % 9;
+                    int slotRow = (i - 9) / 9;
+                    int slotX = panelX + PANEL_PADDING + (slotCol * SLOT_SIZE);
+                    int slotY = panelY + 22 + (slotRow * SLOT_SIZE);
+
+                    if (mouseX >= slotX && mouseX <= slotX + 18 && mouseY >= slotY && mouseY <= slotY + 18) {
+                        String ecSlotKey = "SimpleContainer:" + i;
+                        if (HypixelSkyblockModClient.lockedSlots.contains(ecSlotKey)) {
+                            this.minecraft.player.sendSystemMessage(Component.literal("§cSlot is locked!"));
+                            return true;
+                        }
+
+                        if (FirmamentState.lastRequestedPage == targetPage) {
+                            this.minecraft.gameMode.handleContainerInput(containerId, i, button, inputType, this.minecraft.player);
+                        } else {
+                            FirmamentState.lastRequestedPage = targetPage;
+                            this.minecraft.player.connection.sendCommand("ec " + targetPage);
+                        }
                         return true;
                     }
                 }
+
+                if (FirmamentState.lastRequestedPage != targetPage) {
+                    FirmamentState.lastRequestedPage = targetPage;
+                    this.minecraft.player.connection.sendCommand("ec " + targetPage);
+                    return true;
+                }
             }
         }
+
+        int invPanelX = (this.width - PANEL_WIDTH) / 2;
+        int invPanelY = startY + PANEL_HEIGHT + 15;
+
+        for (int i = 9; i < 36; i++) {
+            int slotCol = (i - 9) % 9;
+            int slotRow = (i - 9) / 9;
+            int slotX = invPanelX + PANEL_PADDING + (slotCol * SLOT_SIZE);
+            int slotY = invPanelY + 6 + (slotRow * SLOT_SIZE);
+
+            if (mouseX >= slotX && mouseX <= slotX + 18 && mouseY >= slotY && mouseY <= slotY + 18) {
+                String invSlotKey = "Inventory:" + i;
+                if (HypixelSkyblockModClient.lockedSlots.contains(invSlotKey)) {
+                    this.minecraft.player.sendSystemMessage(Component.literal("§cSlot is locked!"));
+                    return true;
+                }
+
+                int serverSlotId = i + 45;
+                this.minecraft.gameMode.handleContainerInput(containerId, serverSlotId, button, inputType, this.minecraft.player);
+                return true;
+            }
+        }
+
+        for (int i = 0; i < 9; i++) {
+            int slotX = invPanelX + PANEL_PADDING + (i * SLOT_SIZE);
+            int slotY = invPanelY + 10 + (3 * SLOT_SIZE);
+
+            if (mouseX >= slotX && mouseX <= slotX + 18 && mouseY >= slotY && mouseY <= slotY + 18) {
+                String hotbarSlotKey = "Inventory:" + i;
+                if (HypixelSkyblockModClient.lockedSlots.contains(hotbarSlotKey)) {
+                    this.minecraft.player.sendSystemMessage(Component.literal("§cSlot is locked!"));
+                    return true;
+                }
+
+                int serverSlotId = i + 81;
+                this.minecraft.gameMode.handleContainerInput(containerId, serverSlotId, button, inputType, this.minecraft.player);
+                return true;
+            }
+        }
+
         return super.mouseClicked(event, doubleClick);
     }
 
     @Override
     public boolean isPauseScreen() {
         return false;
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        
+        if (this.minecraft != null && this.minecraft.player != null && this.minecraft.player.containerMenu != null) {
+            String activeCacheKey = "enderchest_" + FirmamentState.lastRequestedPage;
+            
+            for (int i = 0; i < 54; i++) {
+                if (i < this.minecraft.player.containerMenu.slots.size()) {
+                    ItemStack serverStack = this.minecraft.player.containerMenu.slots.get(i).getItem();
+                    StorageCache.updateCache(activeCacheKey, i, serverStack);
+                }
+            }
+        }
     }
 }

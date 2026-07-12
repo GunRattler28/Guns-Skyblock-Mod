@@ -58,7 +58,7 @@ public abstract class ContainerDataMixin {
                             continue; 
                         }
                         
-                        StorageCache.updateCache(cacheKey, slot.index - 9, item);
+                        StorageCache.updateCache(cacheKey, slot.index, item);
                     }
                 }
             }
