@@ -126,7 +126,6 @@ public class TabParser {
             }
         }
 
-        // Process locations
         if (foundLocations.size() == 1) {
             mainArea = foundLocations.get(0);
         } else if (foundLocations.size() >= 2) {
@@ -217,9 +216,7 @@ public class TabParser {
             if (m.find()) {
                 return Integer.parseInt(m.group());
             }
-        } catch (Exception e) {
-            // Drop out quietly
-        }
+        } catch (Exception e) {}
         return 0;
     }
 

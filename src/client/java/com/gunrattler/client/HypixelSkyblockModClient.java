@@ -118,7 +118,6 @@ public class HypixelSkyblockModClient implements ClientModInitializer {
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.player != null && client.level != null) {
-                // Check if we are actually on Hypixel before parsing
                 if (client.getCurrentServer() != null && 
                     client.getCurrentServer().ip.toLowerCase().contains("hypixel.net")) {
                     

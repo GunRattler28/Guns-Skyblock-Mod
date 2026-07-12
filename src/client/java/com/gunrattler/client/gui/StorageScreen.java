@@ -1,7 +1,7 @@
 package com.gunrattler.client.gui;
 
 import com.gunrattler.client.HypixelSkyblockModClient;
-import com.gunrattler.client.util.FirmamentState;
+import com.gunrattler.client.util.StoragePageState;
 import com.gunrattler.client.util.StorageCache;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
@@ -17,7 +17,7 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 
-public class FirmamentStorageScreen extends Screen {
+public class StorageScreen extends Screen {
 
     private final int SLOT_SIZE = 18;
     private final int PANEL_PADDING = 7;
@@ -26,8 +26,8 @@ public class FirmamentStorageScreen extends Screen {
 
     private static final Identifier LOCK_TEXTURE = Identifier.fromNamespaceAndPath("hypixel-skyblock-mod", "textures/gui/lockedslot.png");
 
-    public FirmamentStorageScreen() {
-        super(Component.literal("Firmament Storage"));
+    public StorageScreen() {
+        super(Component.literal("Storage Screen"));
     }
 
     @Override
@@ -53,7 +53,7 @@ public class FirmamentStorageScreen extends Screen {
 
             int displayPageNum = pageIndex + 1;
             String pageName = "Ender Chest Page #" + displayPageNum;
-            if (FirmamentState.lastRequestedPage == displayPageNum) {
+            if (StoragePageState.lastRequestedPage == displayPageNum) {
                 pageName += " §c(Active)";
             }
             graphics.text(this.font, Component.literal("§7" + pageName).getVisualOrderText(), panelX + PANEL_PADDING, panelY + 6, 0xFF404040);
@@ -92,7 +92,7 @@ public class FirmamentStorageScreen extends Screen {
 
         int invPanelX = (this.width - PANEL_WIDTH) / 2;
         int invPanelY = startY + PANEL_HEIGHT + 15;
-        int invPanelHeight = (4 * SLOT_SIZE) + 8 + PANEL_PADDING;
+        int invPanelHeight = (4 * SLOT_SIZE) + 10 + PANEL_PADDING;
 
         graphics.fill(invPanelX, invPanelY, invPanelX + PANEL_WIDTH, invPanelY + invPanelHeight, 0xFFC6C6C6);
         graphics.fill(invPanelX, invPanelY, invPanelX + PANEL_WIDTH, invPanelY + 2, 0xFFFFFFFF);
@@ -240,18 +240,18 @@ public class FirmamentStorageScreen extends Screen {
                             return true;
                         }
 
-                        if (FirmamentState.lastRequestedPage == targetPage) {
+                        if (StoragePageState.lastRequestedPage == targetPage) {
                             this.minecraft.gameMode.handleContainerInput(containerId, i, button, inputType, this.minecraft.player);
                         } else {
-                            FirmamentState.lastRequestedPage = targetPage;
+                            StoragePageState.lastRequestedPage = targetPage;
                             this.minecraft.player.connection.sendCommand("ec " + targetPage);
                         }
                         return true;
                     }
                 }
 
-                if (FirmamentState.lastRequestedPage != targetPage) {
-                    FirmamentState.lastRequestedPage = targetPage;
+                if (StoragePageState.lastRequestedPage != targetPage) {
+                    StoragePageState.lastRequestedPage = targetPage;
                     this.minecraft.player.connection.sendCommand("ec " + targetPage);
                     return true;
                 }
@@ -310,7 +310,7 @@ public class FirmamentStorageScreen extends Screen {
         super.tick();
         
         if (this.minecraft != null && this.minecraft.player != null && this.minecraft.player.containerMenu != null) {
-            String activeCacheKey = "enderchest_" + FirmamentState.lastRequestedPage;
+            String activeCacheKey = "enderchest_" + StoragePageState.lastRequestedPage;
             
             for (int i = 0; i < 54; i++) {
                 if (i < this.minecraft.player.containerMenu.slots.size()) {

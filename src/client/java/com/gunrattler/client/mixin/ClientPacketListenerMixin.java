@@ -1,6 +1,6 @@
 package com.gunrattler.client.mixin;
 
-import com.gunrattler.client.gui.FirmamentStorageScreen;
+import com.gunrattler.client.gui.StorageScreen;
 import com.gunrattler.client.util.StorageCache;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -26,7 +26,7 @@ public class ClientPacketListenerMixin {
         ContainerSetContentPacketAccessor accessor = (ContainerSetContentPacketAccessor) (Object) packet;
         List<ItemStack> items = accessor.getItems();
         
-        StorageCache.setContainerItems("enderchest_" + com.gunrattler.client.util.FirmamentState.lastRequestedPage, items.toArray(new ItemStack[0]));
+        StorageCache.setContainerItems("enderchest_" + com.gunrattler.client.util.StoragePageState.lastRequestedPage, items.toArray(new ItemStack[0]));
     }
 
     @Unique
@@ -43,7 +43,7 @@ public class ClientPacketListenerMixin {
             isOpeningCustomScreen = true;
             Minecraft.getInstance().execute(() -> {
                 try {
-                    Minecraft.getInstance().setScreenAndShow(new FirmamentStorageScreen());
+                    Minecraft.getInstance().setScreenAndShow(new StorageScreen());
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
