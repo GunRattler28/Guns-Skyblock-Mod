@@ -22,7 +22,7 @@ public class FirmamentStorageScreen extends Screen {
     private final int SLOT_SIZE = 18;
     private final int PANEL_PADDING = 7;
     private final int PANEL_WIDTH = (9 * SLOT_SIZE) + (PANEL_PADDING * 2);
-    private final int PANEL_HEIGHT = (6 * SLOT_SIZE) + 18 + PANEL_PADDING;
+    private final int PANEL_HEIGHT = (5 * SLOT_SIZE) + 22 + PANEL_PADDING;
 
     private static final Identifier LOCK_TEXTURE = Identifier.fromNamespaceAndPath("hypixel-skyblock-mod", "textures/gui/lockedslot.png");
 
@@ -76,7 +76,7 @@ public class FirmamentStorageScreen extends Screen {
                 
                 if (!stack.isEmpty()) {
                     graphics.item(stack, slotX + 1, slotY + 1);
-                    
+                    graphics.itemDecorations(this.font, stack, slotX + 1, slotY + 1);
                     String ecSlotKey = "SimpleContainer:" + i;
                     if (HypixelSkyblockModClient.lockedSlots.contains(ecSlotKey)) {
                         graphics.blit(RenderPipelines.GUI_TEXTURED, LOCK_TEXTURE, slotX + 1, slotY + 1, 0.0f, 0.0f, 16, 16, 16, 16);
@@ -92,7 +92,7 @@ public class FirmamentStorageScreen extends Screen {
 
         int invPanelX = (this.width - PANEL_WIDTH) / 2;
         int invPanelY = startY + PANEL_HEIGHT + 15;
-        int invPanelHeight = (4 * SLOT_SIZE) + 12;
+        int invPanelHeight = (4 * SLOT_SIZE) + 8 + PANEL_PADDING;
 
         graphics.fill(invPanelX, invPanelY, invPanelX + PANEL_WIDTH, invPanelY + invPanelHeight, 0xFFC6C6C6);
         graphics.fill(invPanelX, invPanelY, invPanelX + PANEL_WIDTH, invPanelY + 2, 0xFFFFFFFF);
@@ -114,6 +114,7 @@ public class FirmamentStorageScreen extends Screen {
                 ItemStack stack = this.minecraft.player.getInventory().getItem(i);
                 if (!stack.isEmpty()) {
                     graphics.item(stack, slotX + 1, slotY + 1);
+                    graphics.itemDecorations(this.font, stack, slotX + 1, slotY + 1);
 
                     String invSlotKey = "Inventory:" + i;
                     if (HypixelSkyblockModClient.lockedSlots.contains(invSlotKey)) {
@@ -140,7 +141,7 @@ public class FirmamentStorageScreen extends Screen {
                 ItemStack stack = this.minecraft.player.getInventory().getItem(i);
                 if (!stack.isEmpty()) {
                     graphics.item(stack, slotX + 1, slotY + 1);
-
+                    graphics.itemDecorations(this.font, stack, slotX + 1, slotY + 1);
                     String hotbarSlotKey = "Inventory:" + i;
                     if (HypixelSkyblockModClient.lockedSlots.contains(hotbarSlotKey)) {
                         graphics.blit(RenderPipelines.GUI_TEXTURED, LOCK_TEXTURE, slotX + 1, slotY + 1, 0.0f, 0.0f, 16, 16, 16, 16);
@@ -158,6 +159,7 @@ public class FirmamentStorageScreen extends Screen {
             ItemStack carriedStack = this.minecraft.player.containerMenu.getCarried();
             if (!carriedStack.isEmpty()) {
                 graphics.item(carriedStack, mouseX - 8, mouseY - 8);
+                graphics.itemDecorations(this.font, carriedStack, mouseX - 8, mouseY - 8);
             }
         }
 
