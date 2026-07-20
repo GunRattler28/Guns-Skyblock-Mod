@@ -25,6 +25,10 @@ Download the .jar from the files and add it to .minecraft/mods. It will now auto
 * **Smart Environment Detection:** Safety features automatically activate **only** when your connection to Hypixel Skyblock is validated, leaving your vanilla survival worlds or other minigames uninhibited.
 * **Local Persistence:** Your locked slots are automatically written straight to disk, saving your locked preferences perfectly across game reboots.
 
+### 4. Custom Enderchest UI
+
+* **3 page enderchest** When you run `/ec` the mod automatically goes through the first 3 enderchest pages and creates a custom 3 page UI
+* **Completely Allowed** The mod doesn't let you take the items from the page in one click. You click on the page to make it active then click again to get your item. This means that it is purely visual and doesn't actuallly help you. Therefore it is allowed on Hypixel
 ---
 
 ## Requirements
