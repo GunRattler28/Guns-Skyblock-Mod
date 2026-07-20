@@ -1,12 +1,12 @@
 # Gun's Skyblock Mod
 
-A lightweight, performance-focused client-side Fabric mod designed to enhance your Hypixel Skyblock experience with dynamic price evaluation tooltips, a sleek, non-intrusive custom scoreboard overlay, and persistent, fail-safe item protection.
+A lightweight, performance-focused client-side Fabric mod designed to enhance your Hypixel Skyblock experience with dynamic price evaluation tooltips, a sleek, non-intrusive custom scoreboard overlay, persistent, fail-safe item protection and a custom 3 page enderchest UI.
 
 ---
 
 ## How to Use the Mod
 
-This mod runs automatically in the background once installed. Here is how you interact with its core features in-game:
+Download the .jar from the files and add it to .minecraft/mods. It will now automatically run when the game opens. Here is how you interact with its core features in-game:
 
 ### 1. Custom Scoreboard Overlay
 * **What it does:** Replaces the cluttered vanilla sidebar scoreboard with a clean, compact HUD showing essential server data (Purse, Bank, Powder, current Area, and active Objectives). 
