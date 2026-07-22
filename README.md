@@ -1,34 +1,30 @@
 # Gun's Skyblock Mod
 
-A lightweight, performance-focused client-side Fabric mod designed to enhance your Hypixel Skyblock experience with dynamic price evaluation tooltips, a sleek, non-intrusive custom scoreboard overlay, persistent, fail-safe item protection and a custom 3 page enderchest UI.
+Gun's Skyblock mod is a client-side that adds much needed quality of life features such as item prices on hover, a custom scoreboard that shows bank and powder on top of everything else that is normally shown and slot locking which stays after the game is closed and reopened.
 
 ---
 
-## How to Use the Mod
+### 1. Custom Scoreboard
+* **What it does:** Replaces the scoreboard with a cleaner, more colourful scoreboard that shows bank balance as well. It also shows all 3 of the mining powders when in a mining area (where powder is obtainable) 
+* **Activation:** To make sure it doesn't get in the way of playing on other servers it **only** shows when you are on hypixel.net and playing **Skyblock**.
+* **Debug:** Tapping `F3` both opens the debug screen and now hides the custom scoreboard so that you can see if something is missing from the custom scoreboard.
 
-Download the .jar from the files and add it to .minecraft/mods. It will now automatically run when the game opens. Here is how you interact with its core features in-game:
+### 2. Item Prices
+* **Bazaar Prices:** Hovering over an item that is on the bazaar shows it's **Insta buy** and **Insta sell** prices inside the tooltip. These prices are at most a few minutes old as the mod fetches the prices every few minutes
+* **Auction Prices:** Hovering over an items that is **only** on the auction house gives the lbin (lowest buy it now) price. Like the bazaar these prices are also at most a few minutes old
+* **Stack Prices** When holding shift (not crouch but shift on your keyboard) the price shows the price of all the items in that slot (e.g: 1 item could cost 5k whereas while holding shift ti would show 36 (or how many items are in that slot) would cost 180k)
 
-### 1. Custom Scoreboard Overlay
-* **What it does:** Replaces the cluttered vanilla sidebar scoreboard with a clean, compact HUD showing essential server data (Purse, Bank, Powder, current Area, and active Objectives). 
-* **Activation:** The custom HUD automatically renders on the right side of your screen **only** when you are actively connected to `hypixel.net` and playing the **Skyblock** gamemode.
-* **Auto-Hide:** The overlay automatically hides itself when you open the vanilla debug screen (`F3`) to prevent text overlapping.
-
-### 2. Dynamic Price Tooltips
-* **Bazaar Pricing:** Hovering over any item compatible with the Bazaar displays its current **Insta-Buy** and **Insta-Sell** values directly inside the item's tooltip.
-* **LBIN Pricing:** If an item is not traded on the Bazaar, the tooltip will dynamically fall back to showing its Lowest Bin (**LBIN**) auction house price.
-* **Price Prioritization:** For items featuring both data pools, the mod strictly prioritizes **Bazaar prices** over LBIN to give you the most accurate commodity valuation.
-* **Stack Scaling (Shift Modifier):** By default, tooltips display individual per-item unit prices. Holding down `LEFT SHIFT` while hovering over a stacked item instantly scales the tooltip text to display the complete compounding value of the entire item stack.
-
-### 3. Persistent Slot Locking (Skyblock Exclusive)
-* **Locking a Slot:** Open any container menu or your inventory and hover your mouse over a slot. Press the **[L]** key to lock or unlock that slot. Locked slots will instantly display a distinct locked overlay texture.
-* **Drop & Interaction Protection:** While a slot is locked, the mod completely blocks you from dropping the item (**Q** drops), dragging it out of the container, moving it via hotkeys, or losing it if you close an interface while holding the item. 
-* **Smart Environment Detection:** Safety features automatically activate **only** when your connection to Hypixel Skyblock is validated, leaving your vanilla survival worlds or other minigames uninhibited.
-* **Local Persistence:** Your locked slots are automatically written straight to disk, saving your locked preferences perfectly across game reboots.
+### 3. Slot Locking
+* **How to Lock a Slot:** Hovering over an item and tapping `L` on your keyboard locks that slot. 
+* **What this does:** If a slot is locked it means it can't be moved (apart from hovering over it and tapping a hotbar slot number) or dropped.
+* **Activation** To make sure it doesn't get in the way of playing on other servers it **only** shows when you are on hypixel.net and playing **Skyblock** ..
+* **Saved Slots:** The locked slots are written to a file when they are locked, deleted when unlocked and read when the game boots. Since this file doesn't need minecraft to be running to store data it means that the mod remembers which slots are locked (and locks them) no matter how times you open and close the game. This comes at the low price of under a kilobyte to store these locked slots. 
 
 ### 4. Custom Enderchest UI
 
 * **3 page enderchest** When you run `/ec` the mod automatically goes through the first 3 enderchest pages and creates a custom 3 page UI
 * **Completely Allowed** The mod doesn't let you take the items from the page in one click. You click on the page to make it active then click again to get your item. This means that it is purely visual and doesn't actuallly help you. Therefore it is allowed on Hypixel
+
 ---
 
 ## Requirements
@@ -38,17 +34,3 @@ Download the .jar from the files and add it to .minecraft/mods. It will now auto
 - Loom 1.17
 - Fabric Loader
 - Java 21
-
-## Configuration File
-
-Your slot configurations are saved locally in plain text format so they can be remembered every time you launch the game.
-* **File Path:** `config/locked_slots.txt` *(located inside your .minecraft folder)*
-* **Format Example:**
-  ```
-  Inventory:0   //Hotbar slot 1
-  Inventory:1   //Hotbar slot 2
-  Inventory:2   //Hotbar slot 3
-  Inventory:3   //Hotbar slot 4
-  Inventory:4   //Hotbar slot 5
-  Inventory:5   //Hotbar slot 6
-  ```
