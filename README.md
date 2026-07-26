@@ -2,6 +2,8 @@
 
 Gun's Skyblock mod is a client-side that adds much needed quality of life features such as item prices on hover, a custom scoreboard that shows bank and powder on top of everything else that is normally shown and slot locking which stays after the game is closed and reopened.
 
+A video showcasing the features is available [here](https://gunrattler28.github.io/Portfolio-Website/)
+
 ---
 
 ### 1. Custom Scoreboard

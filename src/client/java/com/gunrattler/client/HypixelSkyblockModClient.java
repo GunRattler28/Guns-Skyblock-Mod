@@ -87,8 +87,8 @@ public class HypixelSkyblockModClient implements ClientModInitializer {
                             long finalSell = isHoldingShift ? bzEntry.sellPrice * count : bzEntry.sellPrice;
                             String modeTag = isHoldingShift ? " Stack" : "";
 
-                            lines.add(Component.literal("§6Bazaar Insta-Buy" + modeTag + ": §e" + formatPrice(finalBuy) + " coins"));
-                            lines.add(Component.literal("§dBazaar Insta-Sell" + modeTag + ": §a" + formatPrice(finalSell) + " coins"));
+                            lines.add(Component.literal("§eBazaar Insta-Buy" + modeTag + ": §6" + formatPrice(finalBuy) + " coins"));
+                            lines.add(Component.literal("§eBazaar Insta-Sell" + modeTag + ": §6" + formatPrice(finalSell) + " coins"));
                             
                             if (count > 1 && !isHoldingShift) {
                                 lines.add(Component.literal("§8Hold [SHIFT] for entire stack prices"));
@@ -97,9 +97,9 @@ public class HypixelSkyblockModClient implements ClientModInitializer {
 
                         else if (ahPrice != null && ahPrice > 0) {
                             long finalAh = isHoldingShift ? ahPrice * count : ahPrice;
-                            String prefix = isHoldingShift ? "§dLBIN Stack: " : "§dLBIN: ";
+                            String prefix = isHoldingShift ? "§eLBIN Stack: " : "§eLBIN: ";
                             
-                            lines.add(Component.literal(prefix + "§e" + formatPrice(finalAh) + " coins"));
+                            lines.add(Component.literal(prefix + "§6" + formatPrice(finalAh) + " coins"));
                             
                             if (count > 1 && !isHoldingShift) {
                                 lines.add(Component.literal("§8Hold [SHIFT] for entire stack price"));
